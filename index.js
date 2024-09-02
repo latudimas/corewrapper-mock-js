@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const fetch = require('node-fetch');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -54,8 +53,10 @@ app.post('/api/v1/inquiry-loan', (req, res) => {
     };
 
     if (aditionalDataPrivate === "194868        1000" && fromAccount == "194848") {
+      // Single Data
       responseSuccess.data.aditionalDataPrivate = "194868         0001LD2404464849       IDR00001000000000002420240213202602132024051300006000000091671249130000004169271331001937762         21069  6400.01   MERCHLIN  CUR        000000416927133ID0010002   ";
     } else if (aditionalDataPrivate === "194955        1000" && fromAccount == "194955") {
+      // Multiple Data
       responseSuccess.data.aditionalDataPrivate = "194955        10011LD2431300309       IDR00000010000000005W20241108202412132024121301300000000001000000000000000012500001001938688         21069  6200.01   MERCHLD   CUR        000000000000000ID0010002   LD2431301781       IDR00000010000000002W20241108202411222024112201300000000001000000000000000005000001001938688         21069  6200.01   MERCHLD   CUR        000000000000000ID0010002   LD2431302107       IDR00000010000000006W20241108202412202024122001300000000001000000000000000015000001001938688         21069  6200.01   MERCHLD   CUR        000000000000000ID0010002   LD2431306047       IDR00000100000000000320241108202502082024120801200000000010000000000000003400221121001938688         21069  6400.01   MERCHLIN  CUR        000000340022112ID0010002   LD2431307079       IDR00000010000000001W20241108202411152024111501300000000000997425000000000002500001001938688         21069  6200.01   MERCHLD   LIQ  PDO   000000000000000ID0010002   LD2431317297       IDR00000010000000001W20241108202411152024111501300000000001007500000000000002500001001938688         21069  6200.01   MERCHLD   LIQ  PDO   000000000000000ID0010002   LD2431331860       IDR00000010000000002W20241108202411222024112201300000000001000000000000000005000001001938688         21069  6200.01   MERCHLD   CUR        000000000000000ID0010002   LD2431341070       IDR00000010000000001W20241108202411152024111501300000000001007500000000000002500001001938688         21069  6200.01   MERCHLD   LIQ  PDO   000000000000000ID0010002   LD2431349026       IDR00000010000000001W20241108202411152024111501300000000001007500000000000002500001001938688         21069  6200.01   MERCHLD   LIQ  PDO   000000000000000ID0010002   LD2431360149       IDR00000010000000003W20241108202411292024112901300000000001000000000000000007500001001938688         21069  6200.01   MERCHLD   CUR        000000000000000ID0010002   LD2431373330       IDR00000010000000004W20241108202412062024120601300000000001000000000000000010000001001938688         21069  6200.01   MERCHLD   CUR        000000000000000ID0010002   "
     }
 
@@ -67,31 +68,32 @@ app.post('/api/v1/inquiry-loan', (req, res) => {
   }
 });
 
-app.post('/api/pause-cw', async (req, res) => {
-  const projectId = process.env.PROJECT_ID;
-  const vercelToken = process.env.VERCEL_TOKEN;
-  const route = `${projectId}/pause?`;
-
-  try {
-    const response = await fetch(`https://api.vercel.com/v1/projects/${route}`, {
-      method: `POST`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${vercelToken}`,
-      },
-    });
-
-    if (response.ok) {
-      res.status(200).json({ message: "Corewrapper mock service successfully paused" });
-    } else {
-      res.status(response.status).json({ message: "Corewrapper mock service successfully paused" });
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ message: 'Internal server error' })
-  }
-
-});
+// FOR PAUSING INSTANCE
+// app.post('/api/pause-cw', async (req, res) => {
+//   const projectId = process.env.PROJECT_ID;
+//   const vercelToken = process.env.VERCEL_TOKEN;
+//   const route = `${projectId}/pause?`;
+//
+//   try {
+//     const response = await fetch(`https://api.vercel.com/v1/projects/${route}`, {
+//       method: `POST`,
+//       headers: {
+//         'Content-Type': 'application/json',
+//         Authorization: `Bearer ${vercelToken}`,
+//       },
+//     });
+//
+//     if (response.ok) {
+//       res.status(200).json({ message: "Corewrapper mock service successfully paused" });
+//     } else {
+//       res.status(response.status).json({ message: "Corewrapper mock service successfully paused" });
+//     }
+//   } catch (error) {
+//     console.error('Error:', error);
+//     res.status(500).json({ message: 'Internal server error' })
+//   }
+//
+// });
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
