@@ -1,10 +1,9 @@
-require('dotenv').config();
-import express, { json } from 'express';
+const express = require('express');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(json());
+app.use(express.json());
 
 let data = [
   {
@@ -59,10 +58,12 @@ let historyData = [
 // Helper methods for filtering data by cif
 const matchesCif = searchCif => item => item.cif === searchCif;
 const searchByCif = (data, cif) => data.filter(matchesCif(cif));
+const findByCif = (data, cif) => data.find(item => item.cif === cif);
 
 // Helper methods for filtering data by ldNo, LOAN REPORT ONLY
 const matchesLoanNo = loanNo => item => item.loanNo === loanNo;
 const searchByLoanNo = (historyData, loanNo) => historyData.filter(matchesLoanNo(loanNo));
+const findByLoanNo = (data, loanNo) => data.find(item => item.loanNo === loanNo);
 
 /**
   * LOAN LIMIT
@@ -78,7 +79,7 @@ app.post('/api/v1/loan/limit-get', (req, res) => {
     const productCode = additionalData.limitProduct;
     const cif = additionalData.customerNo;
 
-    const returnData = searchByCif(data, cif);
+    const returnData = findByCif(data, cif);
 
     const responseSuccess = {
       message: 'success',
@@ -90,11 +91,11 @@ app.post('/api/v1/loan/limit-get', (req, res) => {
       status: true
     };
 
-    console.info(`Success processing limit inquiry request with cif ${customerNo} and limitProduct ${limitProduct}`)
+    console.info(`Success processing limit inquiry request with cif ${cif} and limitProduct ${productCode}`)
     res.json(responseSuccess);
 
   } catch (error) {
-    console.error(`Success processing limit inquiry request with cif${customerNo} and limitProduct ${limitProduct} with error ${error}`);
+    console.error(`Success processing limit inquiry request with cif${cif} and limitProduct ${productCode} with error ${error}`);
     res.status(400).json({ error: 'Invalid JSON in request body' });
   }
 });
@@ -109,10 +110,10 @@ app.post('/api/v1/loan/limit-get', (req, res) => {
   */
 app.post('/api/v1/inquiry-loan', (req, res) => {
   try {
-    const { aditionalDataPrivate, fromAccount } = req.body;
+    const { fromAccount } = req.body;
     const cif = fromAccount;
 
-    const returnData = searchByCif(data, cif);
+    const returnData = findByCif(data, cif);
 
     //  the response
     const responseSuccess = {
@@ -147,7 +148,7 @@ app.post('api/v1/inquiry/nasabah', (req, res) => {
     const additionalData = JSON.parse(aditionalDataPrivate);
     const cif = additionalData.cifNo;
 
-    const returnData = searchByCif(data, cif);
+    const returnData = findByCif(data, cif);
 
     //  the response
     const responseSuccess = {
@@ -182,7 +183,7 @@ app.post('api/v1/loan/report', (req, res) => {
     const additionalData = JSON.parse(aditionalDataPrivate);
     const loanNo = additionalData.ldNo;
 
-    const returnData = searchByLoanNo(historyData, loanNo);
+    const returnData = findByLoanNo(historyData, loanNo);
 
     //  the response
     const responseSuccess = {
